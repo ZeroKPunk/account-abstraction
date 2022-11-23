@@ -3,8 +3,11 @@ import '@typechain/hardhat'
 import { HardhatUserConfig } from 'hardhat/config'
 import 'hardhat-deploy'
 import '@nomiclabs/hardhat-etherscan'
-
+import "@nomiclabs/hardhat-ganache"
 import 'solidity-coverage'
+
+import * as dotenv from "dotenv";
+dotenv.config();
 
 import * as fs from 'fs'
 
@@ -49,12 +52,21 @@ const config: HardhatUserConfig = {
     }
   },
   networks: {
-    dev: { url: 'http://localhost:8545' },
+    dev: { url: 'http://localhost:7545' },
     // github action starts localgeth service, for gas calculations
-    localgeth: { url: 'http://localgeth:8545' },
-    goerli: getNetwork('goerli'),
-    proxy: getNetwork1('http://localhost:8545'),
-    kovan: getNetwork('kovan')
+    localgeth: { url: 'http://localgeth:7545' },
+    goerli: {
+      url: process.env.GOERLI_URL || "",
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+    proxy: getNetwork1('http://localhost:7545'),
+    kovan: getNetwork('kovan'),
+    scrollTestnet: {
+      url: process.env.SCROLL_TESTNET_URL || "",
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
   },
   mocha: {
     timeout: 10000

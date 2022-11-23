@@ -1,12 +1,13 @@
 import { ethers } from 'hardhat'
 import { arrayify, getCreate2Address, hexConcat, keccak256, parseEther } from 'ethers/lib/utils'
 import { BigNumber, BigNumberish, Contract, ContractReceipt, Wallet } from 'ethers'
-import { EntryPoint, EntryPoint__factory, IEntryPoint, IERC20, SimpleWallet__factory, TestAggregatedWallet__factory } from '../typechain'
+import { BLSOpen__factory, BLSSignatureAggregator__factory, BLSWallet__factory, EntryPoint, EntryPoint__factory, IEntryPoint, IERC20, SimpleWallet__factory, TestAggregatedWallet__factory, TestToken__factory } from '../typechain'
 import { BytesLike, hexValue } from '@ethersproject/bytes'
 import { expect } from 'chai'
 import { Create2Factory } from '../src/Create2Factory'
 import { debugTransaction } from './debugTx'
 import { UserOperation } from './UserOperation'
+import { solG2 } from '@thehubbleproject/bls/dist/mcl'
 
 export const AddressZero = ethers.constants.AddressZero
 export const HashZero = ethers.constants.HashZero
@@ -264,6 +265,29 @@ export async function deployEntryPoint (provider = ethers.provider): Promise<Ent
   const addr = await create2factory.deploy(epf.bytecode, 0, process.env.COVERAGE != null ? 20e6 : 8e6)
   return EntryPoint__factory.connect(addr, provider.getSigner())
 }
+
+export async function deployBLSOpen(provider = ethers.provider) {
+  const create2factory = new Create2Factory(provider)
+  const epf = new BLSOpen__factory(provider.getSigner())
+  const addr = await create2factory.deploy(epf.bytecode, 0, process.env.COVERAGE != null ? 20e6 : 8e6)
+  return BLSOpen__factory.connect(addr, provider.getSigner())
+}
+
+export async function deployBLSSignatureAggregator(linkLibAddress:string, provider = ethers.provider) {
+  const create2factory = new Create2Factory(provider)
+  const epf = new BLSSignatureAggregator__factory({"contracts/bls/lib/BLSOpen.sol:BLSOpen":linkLibAddress}, provider.getSigner())
+  const addr = await create2factory.deploy(epf.bytecode, 0, process.env.COVERAGE != null ? 20e6 : 8e6)
+  return BLSSignatureAggregator__factory.connect(addr, provider.getSigner())
+}
+
+export async function deployTestToken(provider = ethers.provider) {
+  const create2factory = new Create2Factory(provider)
+  const epf = new TestToken__factory(provider.getSigner())
+  const addr = await create2factory.deploy(epf.bytecode, 0, process.env.COVERAGE != null ? 20e6 : 8e6)
+  return TestToken__factory.connect(addr, provider.getSigner())
+}
+
+
 
 export async function isDeployed (addr: string): Promise<boolean> {
   const code = await ethers.provider.getCode(addr)

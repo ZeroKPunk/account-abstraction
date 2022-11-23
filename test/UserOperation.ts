@@ -14,3 +14,9 @@ export interface UserOperation {
   paymasterAndData: typ.bytes
   signature: typ.bytes
 }
+
+export interface UserOpsPerAggragator {
+  userOps: UserOperation[]
+  aggregator: typ.address
+  signature: typ.bytes
+}

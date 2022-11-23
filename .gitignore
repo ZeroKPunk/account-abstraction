@@ -1,5 +1,5 @@
 node_modules
-
+.env
 #Hardhat files
 cache
 artifacts
@@ -7,12 +7,11 @@ artifacts
 /typechain/
 /dist/
 /yarn-error.log
-/deployments/dev/
-/deployments/localhost/
-/deployments/proxy/
+/deployments/
 /typechain-types/
 /reports/gas-used-output.color
 /coverage
 /coverage.json
 /.DS_Store
 .DS_Store
+
